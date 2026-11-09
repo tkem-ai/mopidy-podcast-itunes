@@ -52,6 +52,18 @@ def test_ref(item, expected):
 
 
 @pytest.mark.parametrize(
+    "item,name",
+    [
+        ({"kind": "podcast", "feedUrl": "http://x", "collectionName": "bar"}, "bar"),
+        ({"kind": "podcast", "feedUrl": "http://x", "trackName": "foo"}, "foo"),
+    ],
+)
+def test_podcast_name(item, name):
+    assert translator.ref(item).name == name
+    assert translator.model(item).name == name
+
+
+@pytest.mark.parametrize(
     "item",
     [
         {},
