@@ -50,6 +50,16 @@ def test_search(config, library, results):
     )
 
 
+def test_search_query_error(library, monkeypatch):
+    from mopidy_podcast_itunes import translator
+
+    def query(*args, **kwargs):
+        raise ValueError("invalid query")
+
+    monkeypatch.setattr(translator, "query", query)
+    assert library.search({"any": ["foo"]}) is None
+
+
 @responses.activate
 @pytest.mark.parametrize(
     "kwargs",
