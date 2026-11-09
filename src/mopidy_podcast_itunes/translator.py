@@ -6,7 +6,7 @@ from . import Extension
 _MODELS = {
     "podcast": lambda item: models.Album(
         uri=uri(item["feedUrl"]),
-        name=item.get("collectionName", item["trackName"]),
+        name=item.get("collectionName") or item["trackName"],
         artists=artists(item),
         date=(item.get("releaseDate", "").partition("T")[0] or None),
         num_tracks=item.get("trackCount"),
@@ -26,7 +26,7 @@ _MODELS = {
 _REFS = {
     "podcast": lambda item: models.Ref.album(
         uri=uri(item["feedUrl"]),
-        name=item.get("collectionName", item["trackName"]),
+        name=item.get("collectionName") or item["trackName"],
     ),
     "podcast-episode": lambda item: models.Ref.track(
         uri=uri(item["feedUrl"], item["episodeGuid"]), name=item["trackName"]

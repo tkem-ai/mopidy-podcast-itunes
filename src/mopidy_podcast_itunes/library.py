@@ -29,13 +29,20 @@ class iTunesPodcastLibraryProvider(backend.LibraryProvider):
         if uri == self.root_directory.uri:
             type, id = "genre", ROOT_GENRE_ID
         else:
-            _, type, id = uri.split(":")
-        if type == "charts":
-            return self.__charts(id)
-        elif type == "genre":
-            return self.__genre(id)
-        else:
-            logger.error("Invalid browse URI: %s", uri)
+            try:
+                _, type, id = uri.split(":")
+            except ValueError:
+                type = id = None
+        try:
+            if type == "charts":
+                return self.__charts(id)
+            elif type == "genre":
+                return self.__genre(id)
+        except Exception as e:
+            logger.error("Error browsing %s: %s", uri, e)
+            return []
+        logger.error("Invalid browse URI: %s", uri)
+        return []
 
     def refresh(self, uri=None):
         self.backend.client.refresh()
