@@ -1,6 +1,7 @@
 import re
 
 import pytest
+import requests
 import responses
 from mopidy.models import Ref
 
@@ -114,3 +115,36 @@ def test_browse_subgenre(config, library, genres, toppodcasts, lookup):
         Ref.directory(name="Top Bar", uri="podcast+itunes:charts:1001"),
         Ref.directory(name="Baz", uri="podcast+itunes:charts:1002"),
     ]
+
+
+@pytest.mark.parametrize(
+    "uri",
+    [
+        "podcast+itunes:charts",
+        "podcast+itunes:genre:26:1",
+        "podcast+itunes:foo:26",
+    ],
+)
+def test_browse_invalid_uri(library, uri):
+    assert library.browse(uri) == []
+
+
+@responses.activate
+def test_browse_unknown_genre(config, library, genres):
+    responses.add(responses.GET, re.compile(r".*/genres\b.*"), json=genres)
+    assert library.browse("podcast+itunes:genre:9999") == []
+
+
+@responses.activate
+@pytest.mark.parametrize("uri", ["podcast+itunes:", "podcast+itunes:charts:26"])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"status": 503},
+        {"body": requests.ConnectionError("connection refused")},
+        {"body": requests.Timeout("timed out")},
+    ],
+)
+def test_browse_http_error(library, uri, kwargs):
+    responses.add(responses.GET, re.compile(r".*"), **kwargs)
+    assert library.browse(uri) == []
