@@ -3,7 +3,9 @@
 **Date:** 2026-11-10
 **Reviewed:** `develop`, i.e. `master` at `a710852` ("Bump codecov/codecov-action from
 6.0.0 to 7.0.0", v4.0.0 plus dependency bumps) plus further dependency bumps, the
-build environment update, the `search()` and `browse()` fixes and this review commit;
+build environment update, the `search()` and `browse()` fixes, "Exclude AGENTS.md from
+source distributions.", "Add system site packages setting as comment to tox.ini.",
+"Restore skip_install for ruff tox environments." and this review commit;
 `__version__` 4.0.0.
 
 **CI status:** All default `tox` environments pass locally on CPython 3.13.18 (`py`:
