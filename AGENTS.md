@@ -21,7 +21,8 @@ tox -e pyright                               # not in envlist yet: still fails
 Installing Mopidy builds PyGObject, which needs the GObject introspection and cairo
 headers (`libgirepository-2.0-dev`, `libcairo2-dev`, `pkg-config` on Debian/Ubuntu).
 Alternatively, install the distribution's `python3-gi` and `python3-cairo` and run
-tox with `VIRTUALENV_SYSTEM_SITE_PACKAGES=true` on a system Python ≥ 3.13.
+tox with `VIRTUALENV_SYSTEM_SITE_PACKAGES=true` on a system Python ≥ 3.13; the
+`system_site_packages` setting in `tox.ini` stays commented out.
 CI (GitHub Actions on `tkem/mopidy-podcast-itunes`, every push) runs CPython 3.13 and
 3.14 inside the `ghcr.io/mopidy/ci` container; without `gh`, check runs via
 `https://api.github.com/repos/tkem/mopidy-podcast-itunes/actions/runs?branch=<branch>`.
@@ -37,8 +38,9 @@ Coverage is reported to Codecov and is not complete; see `.github/copilot-review
   `standard` mode where it is cheap to do so.
 - Private state uses double-underscore names (`self.__session`); all HTTP goes
   through `iTunesPodcastClient`, which returns decoded JSON, never `requests` objects.
-- Log with `logger.error("... %s", arg)`, never f-strings; skip and log single bad
-  results instead of failing a whole `browse()` or `search()`.
+- Log with `logger.error("... %s", arg)`, never f-strings, and never raise from
+  `browse()` or `search()`: Mopidy clients expect an empty result. Skip and log
+  single bad results instead of failing a whole listing.
 - Docs (`docs/index.rst`): wrap prose at column 70, two spaces after a sentence,
   `confval` entries for every setting in `ext.conf`. Keep `README.rst` in sync.
 
